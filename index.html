@@ -3,288 +3,333 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Excel/CSV検索</title>
+<title>東京都指定医療機関検索</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-body{font-family:-apple-system,sans-serif;max-width:1200px;margin:auto;padding:16px}
-button{padding:8px 12px;margin:4px}
-input[type=text]{width:100%;padding:10px;font-size:16px;box-sizing:border-box}
-.card{border:1px solid #ddd;border-radius:10px;padding:12px;margin:12px 0}
-.row{border:1px solid #eee;border-radius:8px;padding:8px;margin-top:8px;cursor:pointer}
-.label{font-size:12px;color:#666}
-.count{font-size:12px;color:#666;margin-top:4px}
-.settings{display:none}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  max-width:1200px;
+  margin:auto;
+  padding:16px;
+  background:#f5f5f5;
+}
+
+h1{
+  text-align:center;
+}
+
+.card{
+  background:white;
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:20px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+input[type=text]{
+  width:100%;
+  padding:12px;
+  font-size:16px;
+  box-sizing:border-box;
+  border:1px solid #ccc;
+  border-radius:8px;
+}
+
+.row{
+  border:1px solid #ddd;
+  border-radius:8px;
+  padding:10px;
+  margin-top:10px;
+  cursor:pointer;
+  background:#fff;
+}
+
+.row:hover{
+  background:#f8f8f8;
+}
+
+.label{
+  font-size:12px;
+  color:#666;
+  margin-top:4px;
+}
+
+.count{
+  font-size:12px;
+  color:#666;
+  margin-top:8px;
+}
+
+.loading{
+  text-align:center;
+  padding:20px;
+}
+
+.error{
+  color:red;
+  padding:20px;
+}
 </style>
 </head>
 <body>
 
-<h1>Excel / CSV 検索</h1>
+<h1>東京都指定医療機関検索</h1>
 
-<button onclick="document.getElementById('fileInput').click()">Excel・CSV追加</button>
-<button onclick="toggleSettings()">設定</button>
+<div id="loading" class="loading">
+データ読込中...
+</div>
 
-<input id="fileInput" type="file"
-accept=".csv,.xlsx,.xls"
-style="display:none">
-
-<div id="settings" class="settings"></div>
 <div id="files"></div>
 
 <script>
-let csvFiles = JSON.parse(localStorage.getItem("csvFiles") || "[]");
+
+let filesData = [];
 let selectedRows = {};
 
-function save(){
- localStorage.setItem("csvFiles", JSON.stringify(csvFiles));
-}
+async function loadConfig(){
 
-function toggleSettings(){
- const el=document.getElementById("settings");
- el.style.display=el.style.display==="block"?"none":"block";
-}
+  const res = await fetch("config.json");
+  const config = await res.json();
 
-document.getElementById("fileInput").addEventListener("change", async e=>{
- const file=e.target.files[0];
- if(!file) return;
+  for(const fileConfig of config.files){
 
- const ext=file.name.toLowerCase();
+    try{
 
- if(ext.endsWith(".csv")){
-   loadCSV(file);
- }else{
-   loadExcel(file);
- }
-});
+      const response = await fetch(fileConfig.file);
 
-function loadCSV(file){
- const reader=new FileReader();
+      const buffer = await response.arrayBuffer();
 
- reader.onload=e=>{
-   const text=e.target.result;
+      const workbook = XLSX.read(buffer,{
+        type:"array"
+      });
 
-   const lines=text.replace(/\r/g,"").split("\n").filter(x=>x.trim());
+      const sheet =
+        workbook.Sheets[
+          workbook.SheetNames[0]
+        ];
 
-   const headers=lines[0].split(",");
-   const rows=lines.slice(1).map(x=>x.split(","));
+      const json =
+        XLSX.utils.sheet_to_json(
+          sheet,
+          {
+            header:1,
+            defval:""
+          }
+        );
 
-   addFile(file.name,headers,rows);
- };
+      if(json.length===0) continue;
 
- reader.readAsText(file,"utf-8");
-}
+      const headers =
+        json[0].map(x=>String(x));
 
-function loadExcel(file){
+      const rows =
+        json.slice(1).map(
+          row=>row.map(
+            cell=>String(cell)
+          )
+        );
 
- const reader=new FileReader();
+      filesData.push({
+        name:fileConfig.name,
+        headers,
+        rows,
+        searchColumns:
+          fileConfig.searchColumns,
+        id:crypto.randomUUID()
+      });
 
- reader.onload=e=>{
+    }catch(error){
 
-   const data=new Uint8Array(e.target.result);
+      console.error(
+        fileConfig.name,
+        error
+      );
+    }
+  }
 
-   const wb=XLSX.read(data,{type:"array"});
+  document
+    .getElementById("loading")
+    .style.display="none";
 
-   const sheet=wb.Sheets[wb.SheetNames[0]];
-
-   const json=XLSX.utils.sheet_to_json(sheet,{
-      header:1,
-      defval:""
-   });
-
-   if(json.length===0) return;
-
-   const headers=json[0].map(x=>String(x));
-
-   const rows=json.slice(1).map(r=>r.map(x=>String(x)));
-
-   addFile(file.name,headers,rows);
- };
-
- reader.readAsArrayBuffer(file);
-}
-
-function addFile(name,headers,rows){
-
- const obj={
-   id:crypto.randomUUID(),
-   name:name.replace(/\.[^.]+$/,""),
-   headers,
-   rows,
-   searchColumns:[0]
- };
-
- csvFiles=csvFiles.filter(f=>f.name!==obj.name);
- csvFiles.push(obj);
-
- save();
- render();
+  render();
 }
 
 function searchRows(file,keyword){
 
- const words=keyword.toLowerCase()
-   .replace(/　/g," ")
-   .split(" ")
-   .filter(Boolean);
+  const words =
+    keyword
+      .toLowerCase()
+      .replace(/　/g," ")
+      .split(" ")
+      .filter(Boolean);
 
- return file.rows.filter(row=>{
+  return file.rows.filter(row=>{
 
-     const target=file.searchColumns
-      .map(i=>row[i]||"")
-      .join(" ")
-      .toLowerCase();
+    const target =
+      file.searchColumns
+        .map(index=>row[index]||"")
+        .join(" ")
+        .toLowerCase();
 
-     return words.every(w=>target.includes(w));
- });
+    return words.every(word=>
+      target.includes(word)
+    );
+  });
 }
 
 function makeDetail(file,row){
 
- const div=document.createElement("div");
- div.className="row";
+  const div =
+    document.createElement("div");
 
- row.forEach((v,i)=>{
+  div.className="row";
 
-   const l=document.createElement("div");
-   l.className="label";
-   l.textContent=file.headers[i] || "項目";
+  row.forEach((value,index)=>{
 
-   const val=document.createElement("div");
-   val.textContent=v;
+    const label =
+      document.createElement("div");
 
-   div.appendChild(l);
-   div.appendChild(val);
- });
+    label.className="label";
 
- return div;
+    label.textContent =
+      file.headers[index] || "項目";
+
+    const content =
+      document.createElement("div");
+
+    content.textContent = value;
+
+    div.appendChild(label);
+    div.appendChild(content);
+  });
+
+  return div;
 }
 
-function render(){
+ function render(){
 
- const files=document.getElementById("files");
- files.innerHTML="";
+  const files =
+    document.getElementById("files");
 
- csvFiles.forEach(file=>{
+  files.innerHTML="";
 
-   const card=document.createElement("div");
-   card.className="card";
+  filesData.forEach(file=>{
 
-   const title=document.createElement("h2");
-   title.textContent=file.name;
+    const card =
+      document.createElement("div");
 
-   const input=document.createElement("input");
-   input.type="text";
-   input.placeholder="検索";
+    card.className="card";
 
-   const count=document.createElement("div");
-   count.className="count";
+    const title =
+      document.createElement("h2");
 
-   const resultArea=document.createElement("div");
+    title.textContent = file.name;
 
-   input.addEventListener("input",()=>{
+    const input =
+      document.createElement("input");
 
-      const keyword=input.value.trim();
+    input.type="text";
+    input.placeholder="検索";
 
-      resultArea.innerHTML="";
-      count.textContent="";
+    const count =
+      document.createElement("div");
 
-      delete selectedRows[file.id];
+    count.className="count";
 
-      if(!keyword) return;
+    const resultArea =
+      document.createElement("div");
 
-      const results=searchRows(file,keyword);
+    input.addEventListener(
+      "input",
+      ()=>{
 
-      count.textContent="検索結果 " + results.length + " 件";
+        const keyword =
+          input.value.trim();
 
-      results.slice(0,100).forEach(row=>{
+        resultArea.innerHTML="";
+        count.textContent="";
 
-         const rowDiv=makeDetail(file,row);
+        delete selectedRows[file.id];
 
-         rowDiv.onclick=()=>{
-            selectedRows[file.id]=row;
-            input.value="";
-            count.textContent="";
-            resultArea.innerHTML="";
-            resultArea.appendChild(makeDetail(file,row));
-         };
+        if(!keyword){
+          return;
+        }
 
-         resultArea.appendChild(rowDiv);
-      });
-   });
+        const results =
+          searchRows(
+            file,
+            keyword
+          );
 
-   card.appendChild(title);
-   card.appendChild(input);
-   card.appendChild(count);
+        count.textContent =
+          "検索結果 "
+          + results.length
+          + " 件";
 
-   if(selectedRows[file.id]){
-      resultArea.appendChild(makeDetail(file,selectedRows[file.id]));
-   }
+        results
+          .slice(0,100)
+          .forEach(row=>{
 
-   card.appendChild(resultArea);
-   files.appendChild(card);
- });
+            const rowDiv =
+              makeDetail(
+                file,
+                row
+              );
 
- renderSettings();
+            rowDiv.onclick=()=>{
+
+              selectedRows[file.id]=row;
+
+              input.value="";
+
+              count.textContent="";
+
+              resultArea.innerHTML="";
+
+              resultArea.appendChild(
+                makeDetail(
+                  file,
+                  row
+                )
+              );
+            };
+
+            resultArea.appendChild(
+              rowDiv
+            );
+          });
+      }
+    );
+
+    card.appendChild(title);
+    card.appendChild(input);
+    card.appendChild(count);
+
+    if(
+      selectedRows[file.id]
+    ){
+      resultArea.appendChild(
+        makeDetail(
+          file,
+          selectedRows[file.id]
+        )
+      );
+    }
+
+    card.appendChild(
+      resultArea
+    );
+
+    files.appendChild(
+      card
+    );
+  });
 }
 
-function renderSettings(){
+loadConfig();
 
- const settings=document.getElementById("settings");
- settings.innerHTML="";
-
- csvFiles.forEach(file=>{
-
-   const box=document.createElement("div");
-   box.className="card";
-
-   const title=document.createElement("h3");
-   title.textContent=file.name;
-   box.appendChild(title);
-
-   file.headers.forEach((header,index)=>{
-
-      const label=document.createElement("label");
-      label.style.display="block";
-
-      const cb=document.createElement("input");
-      cb.type="checkbox";
-      cb.checked=file.searchColumns.includes(index);
-
-      cb.onchange=()=>{
-
-         if(cb.checked){
-            if(!file.searchColumns.includes(index)){
-               file.searchColumns.push(index);
-            }
-         }else{
-            file.searchColumns=file.searchColumns.filter(x=>x!==index);
-         }
-
-         save();
-      };
-
-      label.appendChild(cb);
-      label.append(" "+header);
-
-      box.appendChild(label);
-   });
-
-   const del=document.createElement("button");
-   del.textContent="このファイルを削除";
-
-   del.onclick=()=>{
-      csvFiles=csvFiles.filter(f=>f.id!==file.id);
-      save();
-      render();
-   };
-
-   box.appendChild(del);
-   settings.appendChild(box);
- });
-}
-
-render();
 </script>
 
 </body>
