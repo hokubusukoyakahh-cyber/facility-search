@@ -2,7 +2,7 @@
   "password": "wakamiyaclub",
   "files": [
     {
-      "name": "東京都医療機関",
+      "name": "東京都医療機関202606",
       "file": "data/tokyo_iryo.xlsx",
       "searchColumns": [1,3,4]
     },
