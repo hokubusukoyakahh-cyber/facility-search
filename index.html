@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Excel/CSV検索</title>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<style>
+body{font-family:-apple-system,sans-serif;max-width:1200px;margin:auto;padding:16px}
+button{padding:8px 12px;margin:4px}
+input[type=text]{width:100%;padding:10px;font-size:16px;box-sizing:border-box}
+.card{border:1px solid #ddd;border-radius:10px;padding:12px;margin:12px 0}
+.row{border:1px solid #eee;border-radius:8px;padding:8px;margin-top:8px;cursor:pointer}
+.label{font-size:12px;color:#666}
+.count{font-size:12px;color:#666;margin-top:4px}
+.settings{display:none}
+</style>
+</head>
+<body>
+
+<h1>Excel / CSV 検索</h1>
+
+<button onclick="document.getElementById('fileInput').click()">Excel・CSV追加</button>
+<button onclick="toggleSettings()">設定</button>
+
+<input id="fileInput" type="file"
+accept=".csv,.xlsx,.xls"
+style="display:none">
+
+<div id="settings" class="settings"></div>
+<div id="files"></div>
+
+<script>
+let csvFiles = JSON.parse(localStorage.getItem("csvFiles") || "[]");
+let selectedRows = {};
+
+function save(){
+ localStorage.setItem("csvFiles", JSON.stringify(csvFiles));
+}
+
+function toggleSettings(){
+ const el=document.getElementById("settings");
+ el.style.display=el.style.display==="block"?"none":"block";
+}
+
+document.getElementById("fileInput").addEventListener("change", async e=>{
+ const file=e.target.files[0];
+ if(!file) return;
+
+ const ext=file.name.toLowerCase();
+
+ if(ext.endsWith(".csv")){
+   loadCSV(file);
+ }else{
+   loadExcel(file);
+ }
+});
+
+function loadCSV(file){
+ const reader=new FileReader();
+
+ reader.onload=e=>{
+   const text=e.target.result;
+
+   const lines=text.replace(/\r/g,"").split("\n").filter(x=>x.trim());
+
+   const headers=lines[0].split(",");
+   const rows=lines.slice(1).map(x=>x.split(","));
+
+   addFile(file.name,headers,rows);
+ };
+
+ reader.readAsText(file,"utf-8");
+}
+
+function loadExcel(file){
+
+ const reader=new FileReader();
+
+ reader.onload=e=>{
+
+   const data=new Uint8Array(e.target.result);
+
+   const wb=XLSX.read(data,{type:"array"});
+
+   const sheet=wb.Sheets[wb.SheetNames[0]];
+
+   const json=XLSX.utils.sheet_to_json(sheet,{
+      header:1,
+      defval:""
+   });
+
+   if(json.length===0) return;
+
+   const headers=json[0].map(x=>String(x));
+
+   const rows=json.slice(1).map(r=>r.map(x=>String(x)));
+
+   addFile(file.name,headers,rows);
+ };
+
+ reader.readAsArrayBuffer(file);
+}
+
+function addFile(name,headers,rows){
+
+ const obj={
+   id:crypto.randomUUID(),
+   name:name.replace(/\.[^.]+$/,""),
+   headers,
+   rows,
+   searchColumns:[0]
+ };
+
+ csvFiles=csvFiles.filter(f=>f.name!==obj.name);
+ csvFiles.push(obj);
+
+ save();
+ render();
+}
+
+function searchRows(file,keyword){
+
+ const words=keyword.toLowerCase()
+   .replace(/　/g," ")
+   .split(" ")
+   .filter(Boolean);
+
+ return file.rows.filter(row=>{
+
+     const target=file.searchColumns
+      .map(i=>row[i]||"")
+      .join(" ")
+      .toLowerCase();
+
+     return words.every(w=>target.includes(w));
+ });
+}
+
+function makeDetail(file,row){
+
+ const div=document.createElement("div");
+ div.className="row";
+
+ row.forEach((v,i)=>{
+
+   const l=document.createElement("div");
+   l.className="label";
+   l.textContent=file.headers[i] || "項目";
+
+   const val=document.createElement("div");
+   val.textContent=v;
+
+   div.appendChild(l);
+   div.appendChild(val);
+ });
+
+ return div;
+}
+
+function render(){
+
+ const files=document.getElementById("files");
+ files.innerHTML="";
+
+ csvFiles.forEach(file=>{
+
+   const card=document.createElement("div");
+   card.className="card";
+
+   const title=document.createElement("h2");
+   title.textContent=file.name;
+
+   const input=document.createElement("input");
+   input.type="text";
+   input.placeholder="検索";
+
+   const count=document.createElement("div");
+   count.className="count";
+
+   const resultArea=document.createElement("div");
+
+   input.addEventListener("input",()=>{
+
+      const keyword=input.value.trim();
+
+      resultArea.innerHTML="";
+      count.textContent="";
+
+      delete selectedRows[file.id];
+
+      if(!keyword) return;
+
+      const results=searchRows(file,keyword);
+
+      count.textContent="検索結果 " + results.length + " 件";
+
+      results.slice(0,100).forEach(row=>{
+
+         const rowDiv=makeDetail(file,row);
+
+         rowDiv.onclick=()=>{
+            selectedRows[file.id]=row;
+            input.value="";
+            count.textContent="";
+            resultArea.innerHTML="";
+            resultArea.appendChild(makeDetail(file,row));
+         };
+
+         resultArea.appendChild(rowDiv);
+      });
+   });
+
+   card.appendChild(title);
+   card.appendChild(input);
+   card.appendChild(count);
+
+   if(selectedRows[file.id]){
+      resultArea.appendChild(makeDetail(file,selectedRows[file.id]));
+   }
+
+   card.appendChild(resultArea);
+   files.appendChild(card);
+ });
+
+ renderSettings();
+}
+
+function renderSettings(){
+
+ const settings=document.getElementById("settings");
+ settings.innerHTML="";
+
+ csvFiles.forEach(file=>{
+
+   const box=document.createElement("div");
+   box.className="card";
+
+   const title=document.createElement("h3");
+   title.textContent=file.name;
+   box.appendChild(title);
+
+   file.headers.forEach((header,index)=>{
+
+      const label=document.createElement("label");
+      label.style.display="block";
+
+      const cb=document.createElement("input");
+      cb.type="checkbox";
+      cb.checked=file.searchColumns.includes(index);
+
+      cb.onchange=()=>{
+
+         if(cb.checked){
+            if(!file.searchColumns.includes(index)){
+               file.searchColumns.push(index);
+            }
+         }else{
+            file.searchColumns=file.searchColumns.filter(x=>x!==index);
+         }
+
+         save();
+      };
+
+      label.appendChild(cb);
+      label.append(" "+header);
+
+      box.appendChild(label);
+   });
+
+   const del=document.createElement("button");
+   del.textContent="このファイルを削除";
+
+   del.onclick=()=>{
+      csvFiles=csvFiles.filter(f=>f.id!==file.id);
+      save();
+      render();
+   };
+
+   box.appendChild(del);
+   settings.appendChild(box);
+ });
+}
+
+render();
+</script>
+
+</body>
+</html>
