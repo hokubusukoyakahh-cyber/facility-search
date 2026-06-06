@@ -71,6 +71,26 @@ input[type=text]{
   color:red;
   padding:20px;
 }
+  .searchRow{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.searchRow input{
+  flex:1;
+}
+
+.clearBtn{
+  padding:12px 16px;
+  border:none;
+  border-radius:8px;
+  background:#666;
+  color:white;
+  cursor:pointer;
+  white-space:nowrap;
+}
+  
 </style>
 </head>
 <body>
@@ -227,11 +247,35 @@ function makeDetail(file,row){
 
     title.textContent = file.name;
 
-    const input =
-      document.createElement("input");
+const searchRow =
+  document.createElement("div");
 
-    input.type="text";
-    input.placeholder="検索";
+searchRow.className="searchRow";
+
+const input =
+  document.createElement("input");
+
+input.type="text";
+input.placeholder="検索";
+
+const clearBtn =
+  document.createElement("button");
+
+clearBtn.className="clearBtn";
+clearBtn.textContent="クリア";
+
+clearBtn.onclick=()=>{
+
+  input.value="";
+
+  count.textContent="";
+
+  resultArea.innerHTML="";
+
+  delete selectedRows[file.id];
+
+  input.focus();
+};
 
     const count =
       document.createElement("div");
@@ -303,9 +347,12 @@ function makeDetail(file,row){
       }
     );
 
-    card.appendChild(title);
-    card.appendChild(input);
-    card.appendChild(count);
+searchRow.appendChild(input);
+searchRow.appendChild(clearBtn);
+
+card.appendChild(title);
+card.appendChild(searchRow);
+card.appendChild(count);
 
     if(
       selectedRows[file.id]
