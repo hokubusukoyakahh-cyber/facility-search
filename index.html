@@ -153,6 +153,7 @@ async function loadConfig(){
 
       filesData.push({
         name:fileConfig.name,
+        version:fileConfig.version || "",
         headers,
         rows,
         searchColumns:
@@ -246,6 +247,15 @@ function makeDetail(file,row){
       document.createElement("h2");
 
     title.textContent = file.name;
+
+    const version =
+  document.createElement("div");
+
+version.style.fontSize = "12px";
+version.style.color = "#666";
+version.style.marginBottom = "8px";
+
+version.textContent = file.version;
 
 const searchRow =
   document.createElement("div");
@@ -351,6 +361,7 @@ searchRow.appendChild(input);
 searchRow.appendChild(clearBtn);
 
 card.appendChild(title);
+card.appendChild(version);
 card.appendChild(searchRow);
 card.appendChild(count);
 
