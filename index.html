@@ -129,6 +129,46 @@ input[type=text]{
 let filesData = [];
 let selectedRows = {};
 
+const PASSWORD = "wakamiyaclub";
+
+function login(){
+
+  const input =
+    document.getElementById(
+      "passwordInput"
+    );
+
+  const error =
+    document.getElementById(
+      "loginError"
+    );
+
+  if(
+    input.value === PASSWORD
+  ){
+
+    localStorage.setItem(
+      "facilityLoggedIn",
+      "yes"
+    );
+
+    document
+      .getElementById("loginBox")
+      .style.display="none";
+
+    document
+      .getElementById("mainApp")
+      .style.display="block";
+
+    loadConfig();
+
+  }else{
+
+    error.textContent =
+      "パスワードが違います";
+  }
+}
+
 async function loadConfig(){
 
   const res = await fetch("config.json");
@@ -407,7 +447,22 @@ card.appendChild(count);
   });
 }
 
-loadConfig();
+if(
+  localStorage.getItem(
+    "facilityLoggedIn"
+  ) === "yes"
+){
+
+  document
+    .getElementById("loginBox")
+    .style.display="none";
+
+  document
+    .getElementById("mainApp")
+    .style.display="block";
+
+  loadConfig();
+}
 
 </script>
 
