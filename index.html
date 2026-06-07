@@ -142,10 +142,23 @@ function login(){
     document.getElementById(
       "loginError"
     );
+if(
+  input.value.trim() === PASSWORD
+){
 
-  if(
-    input.value === PASSWORD
-  ){
+  alert("ログイン成功");
+
+  localStorage.setItem(
+    "facilityLoggedIn",
+    "yes"
+  );
+
+  alert("ログイン成功");
+
+  localStorage.setItem(
+    "facilityLoggedIn",
+    "yes"
+  );
 
     localStorage.setItem(
       "facilityLoggedIn",
