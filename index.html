@@ -95,6 +95,27 @@ input[type=text]{
 </head>
 <body>
 
+<div id="loginBox" class="card">
+  <h2>ログイン</h2>
+
+  <input
+    type="password"
+    id="passwordInput"
+    placeholder="パスワード">
+
+  <br><br>
+
+  <button onclick="login()">
+    ログイン
+  </button>
+
+  <div id="loginError"
+       style="color:red;margin-top:10px;">
+  </div>
+</div>
+
+<div id="mainApp" style="display:none;">
+
 <h1>東京都指定医療機関検索</h1>
 
 <div id="loading" class="loading">
@@ -389,6 +410,8 @@ card.appendChild(count);
 loadConfig();
 
 </script>
+
+</div>
 
 </body>
 </html>
