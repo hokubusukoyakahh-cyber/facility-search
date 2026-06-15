@@ -20,19 +20,19 @@
     },
     {
       "name": "更生医療　医療機関",
-      "version": "令和7年7月",
+      "version": "令和7年9月",
       "file": "data/tokyo_kousei_iryo.xlsx",
       "searchColumns": [1,3]
     },
     {
       "name": "更生医療　薬局",
-      "version": "令和7年7月",
+      "version": "令和7年9月",
       "file": "data/tokyo_kousei_yakkyoku.xlsx",
       "searchColumns": [1,3]
     },
     {
       "name": "更生医療　訪問看護",
-      "version": "令和7年7月",
+      "version": "令和7年9月",
       "file": "data/tokyo_kousei_houkan.xlsx",
       "searchColumns": [1,3]
     },
