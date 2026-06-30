@@ -2,19 +2,19 @@
   "files": [
     {
       "name": "精神通院　医療機関",
-      "version": "令和8年6月",
+      "version": "令和8年7月",
       "file": "data/tokyo_iryo.xlsx",
       "searchColumns": [1,3,4]
     },
     {
       "name": "精神通院　薬局",
-      "version": "令和8年6月",
+      "version": "令和8年7月",
       "file": "data/tokyo_yakkyoku.xlsx",
       "searchColumns": [1,3,4]
     },
     {
       "name": "精神通院　訪問看護",
-      "version": "令和8年6月",
+      "version": "令和8年7月",
       "file": "data/tokyo_houkan.xlsx",
       "searchColumns": [1,3,4]
     },
