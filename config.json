@@ -38,7 +38,7 @@
     },
     {
       "name": "身体15条指定医名簿",
-      "version": "令和8年4月",
+      "version": "令和8年7月",
       "file": "data/shintai15.xlsx",
       "searchColumns": [1,3,4,5]
     }
