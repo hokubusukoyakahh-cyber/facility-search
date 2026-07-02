@@ -201,11 +201,17 @@ async function loadConfig(){
 
       if(json.length===0) continue;
 
+      // skipRows = 実データが始まるまでにスキップする行数
+      // (タイトル行や複数行見出しに対応するため。省略時は1行のみスキップ)
+      const skipRows =
+        fileConfig.skipRows || 1;
+
       const headers =
-        json[0].map(x=>String(x));
+        (json[skipRows-1] || [])
+          .map(x=>String(x));
 
       const rows =
-        json.slice(1).map(
+        json.slice(skipRows).map(
           row=>row.map(
             cell=>String(cell)
           )
