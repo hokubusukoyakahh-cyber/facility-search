@@ -224,6 +224,8 @@ async function loadConfig(){
         rows,
         searchColumns:
           fileConfig.searchColumns,
+        displayColumns:
+          fileConfig.displayColumns || null,
         id:crypto.randomUUID()
       });
 
@@ -273,7 +275,13 @@ function makeDetail(file,row){
 
   div.className="row";
 
-  row.forEach((value,index)=>{
+  const indexes =
+    file.displayColumns
+      || row.map((_,i)=>i);
+
+  indexes.forEach(index=>{
+
+    const value = row[index];
 
     const label =
       document.createElement("div");
