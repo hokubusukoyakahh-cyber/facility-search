@@ -182,7 +182,9 @@ async function loadConfig(){
       const buffer = await response.arrayBuffer();
 
       const workbook = XLSX.read(buffer,{
-        type:"array"
+        type:"array",
+        cellText:true,
+        raw:false
       });
 
       const sheet =
@@ -195,7 +197,8 @@ async function loadConfig(){
           sheet,
           {
             header:1,
-            defval:""
+            defval:"",
+            raw:false
           }
         );
 
