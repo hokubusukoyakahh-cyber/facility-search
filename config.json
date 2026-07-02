@@ -4,43 +4,69 @@
       "name": "精神通院　医療機関",
       "version": "令和8年7月",
       "file": "data/tokyo_iryo.xlsx",
-      "searchColumns": [1,3,4]
+      "searchColumns": [
+        1,
+        3,
+        4
+      ]
     },
     {
       "name": "精神通院　薬局",
       "version": "令和8年7月",
       "file": "data/tokyo_yakkyoku.xlsx",
-      "searchColumns": [1,3,4]
+      "searchColumns": [
+        1,
+        3,
+        4
+      ]
     },
     {
       "name": "精神通院　訪問看護",
       "version": "令和8年7月",
       "file": "data/tokyo_houkan.xlsx",
-      "searchColumns": [1,3,4]
+      "searchColumns": [
+        1,
+        3,
+        4
+      ]
     },
     {
       "name": "更生医療　医療機関",
-      "version": "令和7年9月",
+      "version": "令和7年7月",
       "file": "data/tokyo_kousei_iryo.xlsx",
-      "searchColumns": [1,3]
+      "searchColumns": [
+        1,
+        3
+      ]
     },
     {
       "name": "更生医療　薬局",
-      "version": "令和7年9月",
+      "version": "令和7年7月",
       "file": "data/tokyo_kousei_yakkyoku.xlsx",
-      "searchColumns": [1,3]
+      "searchColumns": [
+        1,
+        3
+      ]
     },
     {
       "name": "更生医療　訪問看護",
-      "version": "令和7年9月",
+      "version": "令和7年7月",
       "file": "data/tokyo_kousei_houkan.xlsx",
-      "searchColumns": [1,3]
+      "searchColumns": [
+        1,
+        3
+      ]
     },
     {
       "name": "身体15条指定医名簿",
       "version": "令和8年7月",
       "file": "data/shintai15.xlsx",
-      "searchColumns": [1,3,4,5]
+      "searchColumns": [
+        1,
+        3,
+        4,
+        5
+      ]
     }
   ]
 }
