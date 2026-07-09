@@ -97,9 +97,21 @@
       ]
     },
     {
-      "name": "更生医療（八王子）",
+      "name": "15条指定医（八王子）",
+      "version": "令和8年7月",
+      "file": "data/hachioji_15jou.xlsx",
+      "skipRows": 1,
+      "searchColumns": [
+        1,
+        2,
+        3,
+        7
+      ]
+    },
+    {
+      "name": "更生医療（八王子）　医療機関",
       "version": "令和8年6月",
-      "file": "data/hachioji_kousei.xlsx",
+      "file": "data/hachioji_kousei_iryo.xlsx",
       "skipRows": 3,
       "searchColumns": [
         9,
@@ -115,15 +127,39 @@
       ]
     },
     {
-      "name": "15条指定医（八王子）",
-      "version": "令和8年7月",
-      "file": "data/hachioji_15jou.xlsx",
-      "skipRows": 1,
+      "name": "更生医療（八王子）　薬局",
+      "version": "令和8年6月",
+      "file": "data/hachioji_kousei_yakkyoku.xlsx",
+      "skipRows": 3,
       "searchColumns": [
-        1,
-        2,
+        7,
+        9,
+        10
+      ],
+      "displayColumns": [
         3,
-        7
+        7,
+        8,
+        10,
+        11
+      ]
+    },
+    {
+      "name": "更生医療（八王子）　訪問看護",
+      "version": "令和8年6月",
+      "file": "data/hachioji_kousei_houkan.xlsx",
+      "skipRows": 3,
+      "searchColumns": [
+        6,
+        8,
+        9
+      ],
+      "displayColumns": [
+        3,
+        6,
+        7,
+        9,
+        10
       ]
     }
   ]
