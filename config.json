@@ -95,6 +95,36 @@
         4,
         5
       ]
+    },
+    {
+      "name": "更生医療（八王子）",
+      "version": "令和8年6月",
+      "file": "data/hachioji_kousei.xlsx",
+      "skipRows": 3,
+      "searchColumns": [
+        9,
+        11,
+        12
+      ],
+      "displayColumns": [
+        3,
+        9,
+        10,
+        12,
+        13
+      ]
+    },
+    {
+      "name": "15条指定医（八王子）",
+      "version": "令和8年7月",
+      "file": "data/hachioji_15jou.xlsx",
+      "skipRows": 1,
+      "searchColumns": [
+        1,
+        2,
+        3,
+        7
+      ]
     }
   ]
 }
