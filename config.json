@@ -110,7 +110,7 @@
     },
     {
       "name": "更生医療（八王子）　医療機関",
-      "version": "令和8年6月",
+      "version": "令和8年7月",
       "file": "data/hachioji_kousei_iryo.xlsx",
       "skipRows": 3,
       "searchColumns": [
@@ -128,7 +128,7 @@
     },
     {
       "name": "更生医療（八王子）　薬局",
-      "version": "令和8年6月",
+      "version": "令和8年7月",
       "file": "data/hachioji_kousei_yakkyoku.xlsx",
       "skipRows": 3,
       "searchColumns": [
@@ -146,7 +146,7 @@
     },
     {
       "name": "更生医療（八王子）　訪問看護",
-      "version": "令和8年6月",
+      "version": "令和8年7月",
       "file": "data/hachioji_kousei_houkan.xlsx",
       "skipRows": 3,
       "searchColumns": [
