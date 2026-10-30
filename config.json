@@ -55,6 +55,60 @@
       ]
     },
     {
+      "name": "精神通院（八王子）　医療機関",
+      "version": "令和8年10月",
+      "file": "data/hachioji_seishin_iryo.xlsx",
+      "skipRows": 3,
+      "searchColumns": [
+        2,
+        4,
+        5
+      ],
+      "displayColumns": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ]
+    },
+    {
+      "name": "精神通院（八王子）　薬局",
+      "version": "令和8年10月",
+      "file": "data/hachioji_seishin_yakkyoku.xlsx",
+      "skipRows": 3,
+      "searchColumns": [
+        2,
+        4,
+        5
+      ],
+      "displayColumns": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ]
+    },
+    {
+      "name": "精神通院（八王子）　訪問看護",
+      "version": "令和8年10月",
+      "file": "data/hachioji_seishin_houkan.xlsx",
+      "skipRows": 3,
+      "searchColumns": [
+        2,
+        4,
+        5
+      ],
+      "displayColumns": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ]
+    },
+    {
       "name": "更生医療　医療機関",
       "version": "令和8年3月",
       "file": "data/tokyo_kousei_iryo.xlsx",
